@@ -5,6 +5,7 @@ using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO.Pipelines;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -45,7 +46,7 @@ namespace HouseholdUserApplication.Db_Manager
             user.Address = new Address();
             
              using (MySqlConnection conn = new MySqlConnection(ConnectionString.Build()))
-            {
+             {
                 conn.Open();
                 using (MySqlCommand cmd = new MySqlCommand())
                 {
@@ -74,35 +75,73 @@ namespace HouseholdUserApplication.Db_Manager
                         }
                     }
                 }
-              
+                
                
+            }
                 return user;
+        }
+        public static List<Card> SetCardColors(List<Card> cards,int id)
+        {
+            List<Card> cards1 = new List<Card>();
+            using (MySqlConnection conn = new MySqlConnection(ConnectionString.Build()))
+            {
+                conn.Open();
+                using (MySqlCommand cmd = new MySqlCommand())
+                {
+                    cmd.Connection = conn;
+                    cmd.CommandText = @"SELECT * FROM cards 
+                                        WHERE user_id = @user_id";
+                    cmd.Parameters.AddWithValue("@user_id", id);
+                    using (MySqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            string bindingId = reader["binding_id"].ToString();
+                            Card card = cards.SingleOrDefault(c => c.BindingId == bindingId);
+                            card.Color = reader["color"].ToString();
+                        }
+                    }
+                }
+            }
+            return cards;
+        }
+        public static int CheckLastOrder()
+        {
+            int id = 0;
+            using (MySqlConnection conn = new MySqlConnection(ConnectionString.Build()))
+            {
+                conn.Open();
+                using (MySqlCommand cmd = new MySqlCommand())
+                {
+                    cmd.Connection = conn;
+                    cmd.CommandText = @"SELECT * FROM orders 
+                                        ORDER BY id DESC
+                                        LIMIT 1";
+                    using (MySqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            id = (int)reader["id"]; 
+                        }
+                    }
+                }
+            }
+            return id;
+        }
+        public static void AddOrder(string title)
+        {
+            using (MySqlConnection conn = new MySqlConnection(ConnectionString.Build()))
+            {
+                conn.Open();
+                using (MySqlCommand cmd = new MySqlCommand())
+                {
+                    cmd.Connection = conn;
+                    cmd.CommandText = @"INSERT INTO orders (title) VALUES(@title)";
+                    cmd.Parameters.AddWithValue("@title", title);
+                    cmd.ExecuteNonQuery();
+                }
             }
         }
-        //public static void AddCard(Card card,int userId)
-        //{
-        //    using(MySqlConnection conn = new MySqlConnection(ConnectionString.Build()))
-        //    {
-        //        conn.Open();
-        //        using (MySqlCommand cmd = new MySqlCommand() )
-        //        {
-        //            cmd.Connection = conn;
-        //            cmd.CommandText = @"INSERT INTO cards 
-        //                                (card_number,name,valid_month,valid_year,cvc,color,user)
-        //                                VALUES(@card_number,@name,@valid_month,@valid_year,@cvc,@color,@user)";
-        //            cmd.Parameters.AddWithValue("@card_number", card.CardNumber);
-        //            cmd.Parameters.AddWithValue("@name", card.Name);
-        //            cmd.Parameters.AddWithValue("@valid_month", card.Valid[0]);
-        //            cmd.Parameters.AddWithValue("@valid_year", card.Valid[1]);
-        //            cmd.Parameters.AddWithValue("@cvc", card.CVC);
-        //            cmd.Parameters.AddWithValue("@user", userId);
-        //            cmd.Parameters.AddWithValue("@color", card.Color);
-        //            cmd.ExecuteNonQuery();
-
-
-        //        }
-        //    }
-        //}
         public static void DeleteCard(long cardNumber,int userId)
         {
             using (MySqlConnection conn = new MySqlConnection(ConnectionString.Build()))

@@ -27,7 +27,8 @@ namespace HouseholdUserApplication.Controllers
             User user = UserManager.GetUserById(id);
             if (user != null)
             {
-                user.Cards = await PaymentManager.GetCards(id); 
+                user.Cards = await PaymentManager.GetCards(id);
+                user.Cards = UserManager.SetCardColors(user.Cards,id);
                 return Ok(user);
 
             }
@@ -44,15 +45,18 @@ namespace HouseholdUserApplication.Controllers
         
         }
         [HttpPost("addCard")]
-        public async Task<IActionResult> AddCard(Card card)
+        public async Task<IActionResult> AddCard()
         {
             int id = Int32.Parse(User.Claims.First(c => c.Type == "UserId").Value);
             try
             {
-                RegisterOrder registerOrder = new RegisterOrder(id, 150*100);
+                RegisterOrder registerOrder = new RegisterOrder(id, 150 * 100);
+                registerOrder.OrderNumber = (UserManager.CheckLastOrder() + 1) + "hs";
+                UserManager.AddOrder("Adding Card");
                 OrderModel orderModel = await PaymentManager.RegisterOrder(registerOrder);
                 string url = orderModel.FormUrl.Replace("_binding", "").Replace("  ", " ");
                 return Ok(url);
+
             }
             catch
             {
@@ -60,6 +64,7 @@ namespace HouseholdUserApplication.Controllers
 
             }
         }
+        
         [HttpPost("checkPassword")]
         public IActionResult CheckPassword(Login login)
         {

@@ -11,5 +11,6 @@ namespace HouseholdUserApplication.Models
         public string Password { get; set; }
         public int OrderId { get; set; }
         public int OrderNumber { get; set; }
+        public string BindingId { get; set; }
     }
 }

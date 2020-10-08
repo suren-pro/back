@@ -23,7 +23,6 @@ namespace HouseholdUserApplication.Models
             Amount =ammount;
             Username = "18537506_binding";
             Password = "18537506";
-            OrderNumber = "62";
             ReturnUrl = "https://www.youtube.com/";
         }
     }

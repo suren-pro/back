@@ -35,15 +35,36 @@ namespace HouseholdUserApplication.CardUtils
 
             using (HttpClient http = new HttpClient())
             {
-                string uri = $"https://ipay.arca.am/payment/rest/getBindings.do?password=18537506&userName=18537506_binding&clientId={id}";
+                Uri uri = new Uri($"https://ipay.arca.am/payment/rest/getBindings.do?password=18537506&userName=18537506_binding&clientId={id}");
 
-
+                http.DefaultRequestHeaders.Add("user", "44");
                 HttpResponseMessage response = await http.GetAsync(uri);
                 if (response.IsSuccessStatusCode)
                 {
                     string s = await response.Content.ReadAsStringAsync();
                     GetBindingsModel bindingsModel = JsonConvert.DeserializeObject<GetBindingsModel>(s);
                     return bindingsModel.Bindings;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+        public static async Task<string> GetBindingId(string orderId)
+        {
+
+            using (HttpClient http = new HttpClient())
+            {
+                string uri = $"https://ipay.arca.am/payment/rest/getBindings.do?password=18537506&userName=18537506_binding&orderId={orderId}";
+
+
+                HttpResponseMessage response = await http.GetAsync(uri);
+                if (response.IsSuccessStatusCode)
+                {
+                    string s = await response.Content.ReadAsStringAsync();
+                    OrderStatus orderStatus = JsonConvert.DeserializeObject<OrderStatus>(s);
+                    return orderStatus.BindingId;
                 }
                 else
                 {
