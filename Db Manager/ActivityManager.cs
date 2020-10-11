@@ -1,5 +1,6 @@
 ﻿using HouseholdUserApplication.Models;
 using MySql.Data.MySqlClient;
+using Renci.SshNet.Security.Cryptography;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -58,6 +59,31 @@ namespace HouseholdUserApplication.Db_Manager
             }
             return activityList;
         }
+
+        public static void AddActivity(OrderStatus orderStatus)
+        {
+            Activity activity = new Activity
+            {
+                ServiceName = orderStatus.Description,
+                Amount = orderStatus.Amount,
+                Fee = 0,
+                Rrn= orderStatus.AuthRefNum,
+                Date = Convert.ToDateTime(orderStatus.Date)
+
+            };
+            using (MySqlConnection conn = new MySqlConnection(ConnectionString.Build()))
+            {
+                conn.Open();
+                using (MySqlCommand cmd = new MySqlCommand())
+                {
+                    cmd.Connection = conn;
+                    cmd.CommandText = @"INSERT INTO activities ()
+                                        VALUES()";
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
         public static Activity GetActivity(int id)
         {
             Activity activity = new Activity();

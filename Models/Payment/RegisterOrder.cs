@@ -11,13 +11,13 @@ namespace HouseholdUserApplication.Models
         public string Username { get; set; }
         public string Password { get; set; }
         public string OrderNumber { get; set; }
-        public decimal Amount { get; set; }
+        public float Amount { get; set; }
         public string ReturnUrl { get; set; }
         public string Description { get; set; }
         public string Language { get; set; }
         public string PageView { get; set; }
         public int ClientId { get; set; }
-        public RegisterOrder(int id,decimal ammount)
+        public RegisterOrder(int id,float ammount)
         {
             ClientId = id;
             Amount =ammount;

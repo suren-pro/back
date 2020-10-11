@@ -44,14 +44,15 @@ namespace HouseholdUserApplication.Controllers
         
         
         }
+       
         [HttpPost("addCard")]
         public async Task<IActionResult> AddCard()
         {
             int id = Int32.Parse(User.Claims.First(c => c.Type == "UserId").Value);
             try
             {
-                RegisterOrder registerOrder = new RegisterOrder(id, 150 * 100);
-                registerOrder.OrderNumber = (UserManager.CheckLastOrder() + 1) + "hs";
+                RegisterOrder registerOrder = new RegisterOrder(id, 5);
+                registerOrder.OrderNumber = (UserManager.CheckLastOrder() + 1) + "hou1se";
                 UserManager.AddOrder("Adding Card");
                 OrderModel orderModel = await PaymentManager.RegisterOrder(registerOrder);
                 string url = orderModel.FormUrl.Replace("_binding", "").Replace("  ", " ");
@@ -64,6 +65,24 @@ namespace HouseholdUserApplication.Controllers
 
             }
         }
+        
+
+        [HttpPost("pay")]
+        public async Task<IActionResult> Pay(Payment payment)
+        {
+            try
+            {
+                string result = await PaymentManager.Pay(payment);
+                OrderStatus orderStatus = await PaymentManager.GetOrderStatus(payment.OrderNumber);
+                //ActivityManager.AddActivity(orderStatus);
+                return Ok(orderStatus);
+            }
+            catch
+            {
+                return BadRequest();
+            }
+        }
+
         
         [HttpPost("checkPassword")]
         public IActionResult CheckPassword(Login login)

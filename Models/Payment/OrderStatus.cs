@@ -7,10 +7,13 @@ namespace HouseholdUserApplication.Models
 {
     public class OrderStatus
     {
-        public string UserName { get; set; }
-        public string Password { get; set; }
-        public int OrderId { get; set; }
-        public int OrderNumber { get; set; }
+       
+        public string OrderId { get; set; }
+        public string OrderNumber { get; set; }
+        public double Amount { get; set; }
+        public string Description { get; set; }
+        public string Date { get; set; }
+        public string  AuthRefNum { get; set; }
         public string BindingId { get; set; }
     }
 }

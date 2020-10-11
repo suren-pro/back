@@ -1,4 +1,5 @@
 ﻿using HouseholdUserApplication.Models;
+using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -51,6 +52,37 @@ namespace HouseholdUserApplication.CardUtils
                 }
             }
         }
+        public static async Task<string> Pay(Payment payment)
+        {
+            string uri = $"https://ipay.arca.am/payment/rest/paymentOrderBinding.do?" +
+                $"password=18537506&userName=18537506_binding&" +
+                $"mdOrder={payment.MdOrderId}&bindingId={payment.BindingId}";
+
+            using (HttpClient httpClient = new HttpClient())
+            {
+                HttpResponseMessage message = await httpClient.PostAsJsonAsync<Payment>(uri, payment);
+                string status = await message.Content.ReadAsStringAsync();
+                return status;
+                
+            }
+        }
+        public static async Task<OrderStatus> GetOrderStatus(string orderId)
+        {
+            string url = $"https://ipay.arca.am/payment/rest/getOrderStatusExtended.do?password=18537506&orderNumber={orderId}&userName=18537506_binding";
+            using (HttpClient httpClient = new HttpClient())
+            {
+                HttpResponseMessage message = await httpClient.GetAsync(url);
+                if (message.IsSuccessStatusCode)
+                {
+                    string s = await message.Content.ReadAsStringAsync();
+                    OrderStatus orderStatus = JsonConvert.DeserializeObject<OrderStatus>(s);
+                    return orderStatus;
+                }
+                else
+                    return null;
+            }
+        }
+        
         public static async Task<string> GetBindingId(string orderId)
         {
 

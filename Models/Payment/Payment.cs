@@ -7,8 +7,8 @@ namespace HouseholdUserApplication.Models
 {
     public class Payment
     {
-        public int ErrorCode { get; set; }
-        public string AcsUrl { get; set; }
-        public string RedirectUrl { get; set; }
+        public string MdOrderId { get; set; }
+        public string BindingId { get; set; }
+        public string OrderNumber { get; set; }
     }
 }
