@@ -32,7 +32,7 @@ namespace HouseholdUserApplication.Db_Manager
 
                             activity.Id = (int)reader["id"];
                             activity.ServiceName = reader["service_name"].ToString();
-                            activity.CardNumber = Convert.ToDouble(reader["card_number"]);
+                            activity.CardNumber = reader["card_number"].ToString();
                             activity.Fee = Convert.ToDouble(reader["fee"]);
                             activity.Total = Convert.ToDouble(reader["total"]);
                             activity.OrderId = reader["order_id"].ToString();
@@ -60,15 +60,20 @@ namespace HouseholdUserApplication.Db_Manager
             return activityList;
         }
 
-        public static void AddActivity(OrderStatus orderStatus)
+        public static void AddActivity(OrderStatusModel orderStatus)
         {
             Activity activity = new Activity
             {
-                ServiceName = orderStatus.Description,
-                Amount = orderStatus.Amount,
+                ServiceName ="Card2Card",
+                Amount = Convert.ToDouble(orderStatus.Amount)/100,
                 Fee = 0,
-                Rrn= orderStatus.AuthRefNum,
-                Date = Convert.ToDateTime(orderStatus.Date)
+                Rrn = orderStatus.AuthRefNum,
+                Date = Convert.ToDateTime(orderStatus.Date),
+                CardNumber =orderStatus.CardAuthInfo.Pan,
+                OrderId = orderStatus.OrderNumber,
+                Customer = orderStatus.CardAuthInfo.CardHolderName,
+                Description ="asd",
+               
 
             };
             using (MySqlConnection conn = new MySqlConnection(ConnectionString.Build()))
@@ -77,8 +82,20 @@ namespace HouseholdUserApplication.Db_Manager
                 using (MySqlCommand cmd = new MySqlCommand())
                 {
                     cmd.Connection = conn;
-                    cmd.CommandText = @"INSERT INTO activities ()
-                                        VALUES()";
+                    cmd.CommandText = @"INSERT INTO activities (service_name,amount,order_id,fee,total,rrn,customer_id,customer,address,description,card_number,date)
+                                        VALUES(@service_name,@amount,@order_id,@fee,@total,@rrn,@customer_id,@customer,@address,@description,@card_number,@date)";
+                    cmd.Parameters.AddWithValue("@service_name", activity.ServiceName);
+                    cmd.Parameters.AddWithValue("@amount", activity.Amount);
+                    cmd.Parameters.AddWithValue("order_id", activity.OrderId);
+                    cmd.Parameters.AddWithValue("@fee", activity.Fee);
+                    cmd.Parameters.AddWithValue("@total", activity.Total);
+                    cmd.Parameters.AddWithValue("@rrn", activity.Rrn);
+                    cmd.Parameters.AddWithValue("@card_number", activity.CardNumber);
+                    cmd.Parameters.AddWithValue("@customer_id", 1);
+                    cmd.Parameters.AddWithValue("@customer", activity.Customer);
+                    cmd.Parameters.AddWithValue("@address", 1);
+                    cmd.Parameters.AddWithValue("@description", activity.Description);
+                    cmd.Parameters.AddWithValue("@date", activity.Date);
                     cmd.ExecuteNonQuery();
                 }
             }
@@ -106,7 +123,7 @@ namespace HouseholdUserApplication.Db_Manager
 
                             activity.Id = (int)reader["id"];
                             activity.ServiceName = reader["service_name"].ToString();
-                            activity.CardNumber = Convert.ToDouble(reader["card_number"]);
+                            activity.CardNumber = reader["card_number"].ToString();
                             activity.Fee = Convert.ToDouble(reader["fee"]);
                             activity.Total = Convert.ToDouble(reader["total"]);
                             activity.OrderId = reader["order_id"].ToString();
@@ -168,7 +185,7 @@ namespace HouseholdUserApplication.Db_Manager
 
                             activity.Id = (int)reader["id"];
                             activity.ServiceName = reader["service_name"].ToString();
-                            activity.CardNumber = Convert.ToDouble(reader["card_number"]);
+                            activity.CardNumber = reader["card_number"].ToString();
                             activity.Fee = Convert.ToDouble(reader["fee"]);
                             activity.Total = Convert.ToDouble(reader["total"]);
                             activity.OrderId = reader["order_id"].ToString();

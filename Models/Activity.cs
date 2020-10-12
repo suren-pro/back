@@ -9,9 +9,14 @@ namespace HouseholdUserApplication.Models
     {
         public int Id { get; set; }
         public string ServiceName { get; set; }
-        public double CardNumber { get; set; }
+        public string CardNumber { get; set; }
         public double Fee { get; set; }
-        public double Total { get; set; }
+        public double Total 
+        { 
+            get { return Fee + Amount; }
+            
+            set { } 
+        }
         public string OrderId { get; set; }
         public string Rrn { get; set; }
         public string Customer { get; set; }

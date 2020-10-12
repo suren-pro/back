@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace HouseholdUserApplication.Models
 {
-    public class Payment
+    public class CardAuthInfo
     {
-        public string MdOrderId { get; set; }
-        public string BindingId { get; set; }
+        public string Pan { get; set; }
+        public string CardHolderName { get; set; }
     }
 }

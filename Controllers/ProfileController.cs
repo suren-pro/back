@@ -44,15 +44,43 @@ namespace HouseholdUserApplication.Controllers
         
         
         }
-       
+        [HttpPost("pay")]
+        public async Task<IActionResult> Pay()
+        {
+            int id = Int32.Parse(User.Claims.First(c => c.Type == "UserId").Value);
+
+            try
+            {
+                RegisterOrder registerOrder = new RegisterOrder(500);
+                registerOrder.OrderNumber = (UserManager.CheckLastOrder() + 1) + "hou1se";
+                OrderModel orderModel = await PaymentManager.RegisterOrder(registerOrder);
+                string url = orderModel.FormUrl.Replace("_binding", "").Replace("  ", " ");
+                return Ok(url);
+
+            }
+            catch
+            {
+                return BadRequest();
+
+            }
+        }
+        [HttpPost("getOrderStatus")]
+        public async Task<IActionResult> GetOrderStatus(string orderNumber)
+        {
+            OrderStatusModel orderStatus = await PaymentManager.GetOrderStatus(orderNumber);
+            //ActivityManager.AddActivity(orderStatus);
+            return Ok();
+
+        }
+
         [HttpPost("addCard")]
         public async Task<IActionResult> AddCard()
         {
             int id = Int32.Parse(User.Claims.First(c => c.Type == "UserId").Value);
             try
             {
-                RegisterOrder registerOrder = new RegisterOrder(id, 5);
-                registerOrder.OrderNumber = (UserManager.CheckLastOrder() + 1) + "hou1se";
+                RegisterOrder registerOrder = new RegisterOrder(id, 1*100);
+                registerOrder.OrderNumber = (UserManager.CheckLastOrder() + 1) + "hou1sse";
                 UserManager.AddOrder("Adding Card");
                 OrderModel orderModel = await PaymentManager.RegisterOrder(registerOrder);
                 string url = orderModel.FormUrl.Replace("_binding", "").Replace("  ", " ");
@@ -67,15 +95,16 @@ namespace HouseholdUserApplication.Controllers
         }
         
 
-        [HttpPost("pay")]
-        public async Task<IActionResult> Pay(Payment payment)
+        [HttpPost("payBinding")]
+        public async Task<IActionResult> PayWithBinging(Payment payment)
         {
             try
             {
                 string result = await PaymentManager.Pay(payment);
-                OrderStatus orderStatus = await PaymentManager.GetOrderStatus(payment.OrderNumber);
-                //ActivityManager.AddActivity(orderStatus);
-                return Ok(orderStatus);
+                OrderStatusModel orderStatus = await PaymentManager.GetOrderStatus(payment.MdOrderId);
+                orderStatus.Date = DateTime.Now.ToString();
+                ActivityManager.AddActivity(orderStatus);
+                return Ok();
             }
             catch
             {

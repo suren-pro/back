@@ -66,16 +66,18 @@ namespace HouseholdUserApplication.CardUtils
                 
             }
         }
-        public static async Task<OrderStatus> GetOrderStatus(string orderId)
+        public static async Task<OrderStatusModel> GetOrderStatus(string orderId)
         {
-            string url = $"https://ipay.arca.am/payment/rest/getOrderStatusExtended.do?password=18537506&orderNumber={orderId}&userName=18537506_binding";
+            
+            string url = $"https://ipay.arca.am/payment/rest/getOrderStatusExtended.do?password=18537506" +
+                $"&orderId={orderId}&userName=18537506_binding&language=ru";
             using (HttpClient httpClient = new HttpClient())
             {
                 HttpResponseMessage message = await httpClient.GetAsync(url);
                 if (message.IsSuccessStatusCode)
                 {
                     string s = await message.Content.ReadAsStringAsync();
-                    OrderStatus orderStatus = JsonConvert.DeserializeObject<OrderStatus>(s);
+                    OrderStatusModel orderStatus = JsonConvert.DeserializeObject<OrderStatusModel>(s);
                     return orderStatus;
                 }
                 else
@@ -83,26 +85,26 @@ namespace HouseholdUserApplication.CardUtils
             }
         }
         
-        public static async Task<string> GetBindingId(string orderId)
-        {
+        //public static async Task<string> GetBindingId(string orderId)
+        //{
 
-            using (HttpClient http = new HttpClient())
-            {
-                string uri = $"https://ipay.arca.am/payment/rest/getBindings.do?password=18537506&userName=18537506_binding&orderId={orderId}";
+        //    using (HttpClient http = new HttpClient())
+        //    {
+        //        string uri = $"https://ipay.arca.am/payment/rest/getBindings.do?password=18537506&userName=18537506_binding&orderId={orderId}";
 
 
-                HttpResponseMessage response = await http.GetAsync(uri);
-                if (response.IsSuccessStatusCode)
-                {
-                    string s = await response.Content.ReadAsStringAsync();
-                    OrderStatus orderStatus = JsonConvert.DeserializeObject<OrderStatus>(s);
-                    return orderStatus.BindingId;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-        }
+        //        HttpResponseMessage response = await http.GetAsync(uri);
+        //        if (response.IsSuccessStatusCode)
+        //        {
+        //            string s = await response.Content.ReadAsStringAsync();
+        //            OrderStatusModel orderStatus = JsonConvert.DeserializeObject<OrderStatusModel>(s);
+        //            return orderStatus.BindingId;
+        //        }
+        //        else
+        //        {
+        //            return null;
+        //        }
+        //    }
+        //}
     }
 }

@@ -11,16 +11,23 @@ namespace HouseholdUserApplication.Models
         public string Username { get; set; }
         public string Password { get; set; }
         public string OrderNumber { get; set; }
-        public float Amount { get; set; }
+        public double Amount { get; set; }
         public string ReturnUrl { get; set; }
         public string Description { get; set; }
         public string Language { get; set; }
         public string PageView { get; set; }
         public int ClientId { get; set; }
-        public RegisterOrder(int id,float ammount)
+        public RegisterOrder(double amount)
         {
-            ClientId = id;
-            Amount =ammount;
+            Amount =amount;
+            Username = "18537506_binding";
+            Password = "18537506";
+            ReturnUrl = "https://www.youtube.com/";
+        }
+        public  RegisterOrder(int clientId, double amount)
+        {
+            ClientId = clientId;
+            Amount = amount;
             Username = "18537506_binding";
             Password = "18537506";
             ReturnUrl = "https://www.youtube.com/";
