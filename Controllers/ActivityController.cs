@@ -19,12 +19,7 @@ namespace HouseholdUserApplication.Controllers
     [Authorize]
     public class ActivityController : ControllerBase
     {
-        private IConverter _converter;
-
-        public ActivityController(IConverter converter)
-        {
-            _converter = converter;
-        }
+       
         [HttpGet("getActivity")]
         public IActionResult GetActivity()
         {
