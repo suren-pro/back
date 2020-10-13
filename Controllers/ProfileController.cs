@@ -41,8 +41,6 @@ namespace HouseholdUserApplication.Controllers
         
                 UserManager.Update(user);
                 return Ok();
-        
-        
         }
         [HttpPost("pay")]
         public async Task<IActionResult> Pay()
@@ -68,8 +66,9 @@ namespace HouseholdUserApplication.Controllers
         public async Task<IActionResult> GetOrderStatus(string orderNumber)
         {
             OrderStatusModel orderStatus = await PaymentManager.GetOrderStatus(orderNumber);
+
             //ActivityManager.AddActivity(orderStatus);
-            return Ok();
+            return Ok(orderStatus);
 
         }
 
@@ -80,7 +79,7 @@ namespace HouseholdUserApplication.Controllers
             try
             {
                 RegisterOrder registerOrder = new RegisterOrder(id, 1*100);
-                registerOrder.OrderNumber = (UserManager.CheckLastOrder() + 1) + "hou1sse";
+                registerOrder.OrderNumber = (UserManager.CheckLastOrder() + 1) + "hou1asdsse";
                 UserManager.AddOrder("Adding Card");
                 OrderModel orderModel = await PaymentManager.RegisterOrder(registerOrder);
                 string url = orderModel.FormUrl.Replace("_binding", "").Replace("  ", " ");
@@ -98,10 +97,14 @@ namespace HouseholdUserApplication.Controllers
         [HttpPost("payBinding")]
         public async Task<IActionResult> PayWithBinging(Payment payment)
         {
+            int id = Int32.Parse(User.Claims.First(c => c.Type == "UserId").Value);
             try
             {
-                string result = await PaymentManager.Pay(payment);
-                OrderStatusModel orderStatus = await PaymentManager.GetOrderStatus(payment.MdOrderId);
+                RegisterOrder registerOrder = new RegisterOrder(id,payment.Amount*100);
+                OrderModel orderModel = await PaymentManager.RegisterOrder(registerOrder);
+                UserManager.AddOrder("Adding Card");
+                string result = await PaymentManager.Pay(payment,orderModel.OrderId);
+                OrderStatusModel orderStatus = await PaymentManager.GetOrderStatus(orderModel.OrderId);
                 orderStatus.Date = DateTime.Now.ToString();
                 ActivityManager.AddActivity(orderStatus);
                 return Ok();
@@ -137,23 +140,21 @@ namespace HouseholdUserApplication.Controllers
                 return BadRequest();
             }
         }
-        //[HttpPost("deleteCard")]
-        //public IActionResult DeleteCard(long cardNumber)
-        //{
+        [HttpDelete("deleteCard")]
+        public async Task<IActionResult> DeleteCard(Card card)
+        {
 
-        //    int id = Int32.Parse(User.Claims.First(c => c.Type == "UserId").Value);
-        //    try
-        //    {
-        //        //using (HttpClient httpClient = new HttpClient())
-        //        //{
-        //        //    httpClient.PostAsync();
-        //        //}
-        //    }
-        //    catch
-        //    {
-        //        return BadRequest();
+            int id = Int32.Parse(User.Claims.First(c => c.Type == "UserId").Value);
+            try
+            {
+                await PaymentManager.UnbindCard(card);
+                return Ok();
+            }
+            catch
+            {
+                return BadRequest();
 
-        //    }
-        //}
+            }
+        }
     }
 }
