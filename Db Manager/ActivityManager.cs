@@ -42,6 +42,7 @@ namespace HouseholdUserApplication.Db_Manager
                             activity.Rrn = reader["rrn"].ToString();
                             activity.Customer = reader["customer"].ToString();
                             activity.Description = reader["description"].ToString();
+                            activity.CustomerId = (int)reader["customer_id"]; 
                             activity.Amount = Convert.ToDouble(reader["amount"]);
                             activity.Date = Convert.ToDateTime(reader["date"]);
                                
@@ -63,7 +64,7 @@ namespace HouseholdUserApplication.Db_Manager
             return activityList;
         }
 
-        public static void AddActivity(OrderStatusModel orderStatus)
+        public static void AddActivity(OrderStatusModel orderStatus,int id)
         {
             Activity activity = new Activity
             {
@@ -79,6 +80,7 @@ namespace HouseholdUserApplication.Db_Manager
                
 
             };
+            User user = UserManager.GetUserById(id);
             using (MySqlConnection conn = new MySqlConnection(ConnectionString.Build()))
             {
                 conn.Open();
@@ -94,9 +96,9 @@ namespace HouseholdUserApplication.Db_Manager
                     cmd.Parameters.AddWithValue("@total", activity.Total);
                     cmd.Parameters.AddWithValue("@rrn", activity.Rrn);
                     cmd.Parameters.AddWithValue("@card_number", activity.CardNumber);
-                    cmd.Parameters.AddWithValue("@customer_id", 1);
+                    cmd.Parameters.AddWithValue("@customer_id", user.Id);
                     cmd.Parameters.AddWithValue("@customer", activity.Customer);
-                    cmd.Parameters.AddWithValue("@address", 1);
+                    cmd.Parameters.AddWithValue("@address", user.Address.Id);
                     cmd.Parameters.AddWithValue("@description", activity.Description);
                     cmd.Parameters.AddWithValue("@date", activity.Date);
                     cmd.ExecuteNonQuery();
@@ -226,6 +228,7 @@ namespace HouseholdUserApplication.Db_Manager
                             activity.OrderId = reader["order_id"].ToString();
                             activity.Rrn = reader["rrn"].ToString();
                             activity.Customer = reader["customer"].ToString();
+                            activity.CustomerId = (int)reader["customer_id"];
                             activity.Description = reader["description"].ToString();
                             activity.Amount = Convert.ToDouble(reader["amount"]);
                             activity.Date = Convert.ToDateTime(reader["date"]);

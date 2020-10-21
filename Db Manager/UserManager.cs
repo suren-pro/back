@@ -71,6 +71,7 @@ namespace HouseholdUserApplication.Db_Manager
                             user.Username = reader["Username"].ToString();
                             user.Phone = reader["Phone_number"].ToString();
                             user.Email = reader["Email"].ToString();
+                            user.Address.Id = (int)reader["address_id"];
                             user.Address.Block = reader["block"].ToString();
                             user.Address.Street = reader["street"].ToString();
                             user.Address.Number = (int)reader["number"];

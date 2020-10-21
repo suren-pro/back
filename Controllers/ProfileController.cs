@@ -100,7 +100,7 @@ namespace HouseholdUserApplication.Controllers
                 string result = await PaymentManager.Pay(payment,orderModel.OrderId);
                 OrderStatusModel orderStatus = await PaymentManager.GetOrderStatus(orderModel.OrderId);
                 orderStatus.Date = DateTime.Now.ToString();
-                ActivityManager.AddActivity(orderStatus);
+                ActivityManager.AddActivity(orderStatus,id);
                 return Ok();
             }
             catch

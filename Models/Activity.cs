@@ -23,6 +23,7 @@ namespace HouseholdUserApplication.Models
         public string Description { get; set; }
         public double Amount { get; set; }
         public Address Address { get; set; }
+        public int CustomerId { get; set; }
         public DateTime Date { get; set; }
     }
 }
