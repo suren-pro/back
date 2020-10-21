@@ -26,9 +26,9 @@ namespace HouseholdUserApplication.Db_Manager
                     cmd.CommandText = @"SELECT price,value,date FROM utility_records as UR
                                         INNER JOIN utilities 
                                         ON utility = utility_id
-                                        INNER JOIN users AS U
+                                        INNER JOIN residents_addresses AS U
                                         ON UR.address = U.address
-                                         WHERE U.id = @user_id
+                                         WHERE U.resident = @user_id
                                         AND name=@name
                                         AND date BETWEEN @date1 AND @date2
                                         ORDER BY date
@@ -93,11 +93,11 @@ namespace HouseholdUserApplication.Db_Manager
                     cmd.Connection = conn;
                     cmd.CommandText = @"SELECT utility_record_id,date,value,U.address
                                         FROM utility_records AS UR 
-                                        INNER JOIN users AS U
+                                        INNER JOIN residents_addresses AS U
                                         ON UR.address = U.address
                                         INNER JOIN utilities 
                                         ON utility = utility_id
-                                        WHERE U.id = @user_id
+                                        WHERE U.resident = @user_id
                                         AND name = @name
                                         AND date BETWEEN @date1 AND @date2
                                         ORDER BY date
@@ -137,11 +137,11 @@ namespace HouseholdUserApplication.Db_Manager
                     cmd.Connection =conn;
                     cmd.CommandText = @"SELECT utility_record_id,date,value,U.address,name,price
                                         FROM utility_records AS UR 
-                                        INNER JOIN users AS U
+                                        INNER JOIN residents_addresses AS U
                                          ON UR.address = U.address
                                         INNER JOIN utilities 
                                         ON utility = utility_id
-                                        WHERE U.id = @userId
+                                        WHERE U.resident = @userId
                                         AND year(date) = @year1
                                          ORDER BY utility,date
                                         ";
@@ -229,11 +229,11 @@ namespace HouseholdUserApplication.Db_Manager
                     cmd.Connection = conn;
                     cmd.CommandText = @"SELECT utility_record_id,date,value,U.address,name,price
                                         FROM utility_records AS UR 
-                                        INNER JOIN users AS U
+                                        INNER JOIN residents_addresses AS U
                                          ON UR.address = U.address
                                         INNER JOIN utilities 
                                         ON utility = utility_id
-                                        WHERE U.id = @userId
+                                        WHERE U.resident = @userId
                                         AND year(date) = year(curdate())
                                          ORDER BY utility,date";
                     cmd.Parameters.AddWithValue("@userId", (Convert.ToInt32(userId)));

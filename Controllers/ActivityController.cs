@@ -25,8 +25,22 @@ namespace HouseholdUserApplication.Controllers
         {
             try
             {
-                var activity = ActivityManager.GetActivity();
+                List<Activity> activity = ActivityManager.GetActivity();
                 return Ok(activity);
+            }
+            catch
+            {
+                return BadRequest();
+            }
+        }
+        [HttpGet("getBilling")]
+        public IActionResult GetBilling()
+        {
+            int id = Int32.Parse(User.Claims.First(c => c.Type == "UserId").Value);
+            try
+            {
+                Billing billing = ActivityManager.GetBilling(id);
+                return Ok(billing);
             }
             catch
             {

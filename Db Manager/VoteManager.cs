@@ -19,7 +19,7 @@ namespace HouseholdUserApplication.Db_Manager
                 using(MySqlCommand command = new MySqlCommand())
                 {
                     command.Connection = conn;
-                    command.CommandText = @"INSERT INTO votes (user_id,option_id)
+                    command.CommandText = @"INSERT INTO votes (resident,option_id)
                                             VALUES(@user_id,@option_id) ";
                     command.Parameters.AddWithValue("@user_id", vote.UserId);
                     command.Parameters.AddWithValue("@option_id", vote.Option.Id);

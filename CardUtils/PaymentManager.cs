@@ -17,7 +17,7 @@ namespace HouseholdUserApplication.CardUtils
     {
         public async static Task<OrderModel> RegisterOrder(RegisterOrder registerOrder)
         {
-            registerOrder.OrderNumber = (UserManager.CheckLastOrder() + 1) + "myOrder";
+            registerOrder.OrderNumber = (UserManager.CheckLastOrder() + 1) + "poasdrder11";
 
             using (HttpClient http = new HttpClient())
             {

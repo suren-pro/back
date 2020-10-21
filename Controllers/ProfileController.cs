@@ -28,9 +28,7 @@ namespace HouseholdUserApplication.Controllers
             if (user != null)
             {
                 user.Cards = await PaymentManager.GetCards(id);
-                user.Cards = UserManager.SetCardColors(user.Cards,id);
                 return Ok(user);
-
             }
             else
                 return BadRequest();
@@ -38,15 +36,13 @@ namespace HouseholdUserApplication.Controllers
         [HttpPut("updateDetails")]
         public IActionResult Update(User user)
         {
-        
-                UserManager.Update(user);
-                return Ok();
+           UserManager.Update(user);
+           return Ok();
         }
-        [HttpPost("pay")]
+        [HttpGet("pay")]
         public async Task<IActionResult> Pay()
         {
             int id = Int32.Parse(User.Claims.First(c => c.Type == "UserId").Value);
-
             try
             {
                 RegisterOrder registerOrder = new RegisterOrder(500);
@@ -72,16 +68,15 @@ namespace HouseholdUserApplication.Controllers
 
         }
 
-        [HttpPost("addCard")]
+        [HttpGet("addCard")]
         public async Task<IActionResult> AddCard()
         {
             int id = Int32.Parse(User.Claims.First(c => c.Type == "UserId").Value);
             try
             {
-                RegisterOrder registerOrder = new RegisterOrder(id, 1*100);
-                registerOrder.OrderNumber = (UserManager.CheckLastOrder() + 1) + "hou1asdsse";
-                UserManager.AddOrder("Adding Card");
+                RegisterOrder registerOrder = new RegisterOrder(id, 1 * 100);
                 OrderModel orderModel = await PaymentManager.RegisterOrder(registerOrder);
+                UserManager.AddOrder(orderModel.OrderId);
                 string url = orderModel.FormUrl.Replace("_binding", "").Replace("  ", " ");
                 return Ok(url);
 
@@ -89,7 +84,6 @@ namespace HouseholdUserApplication.Controllers
             catch
             {
                 return BadRequest();
-
             }
         }
         
@@ -102,7 +96,7 @@ namespace HouseholdUserApplication.Controllers
             {
                 RegisterOrder registerOrder = new RegisterOrder(id,payment.Amount*100);
                 OrderModel orderModel = await PaymentManager.RegisterOrder(registerOrder);
-                UserManager.AddOrder("Adding Card");
+                UserManager.AddOrder(orderModel.OrderId);
                 string result = await PaymentManager.Pay(payment,orderModel.OrderId);
                 OrderStatusModel orderStatus = await PaymentManager.GetOrderStatus(orderModel.OrderId);
                 orderStatus.Date = DateTime.Now.ToString();
@@ -140,7 +134,7 @@ namespace HouseholdUserApplication.Controllers
                 return BadRequest();
             }
         }
-        [HttpDelete("deleteCard")]
+        [HttpPost("deleteCard")]
         public async Task<IActionResult> DeleteCard(Card card)
         {
 

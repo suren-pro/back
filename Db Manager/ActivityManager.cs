@@ -21,8 +21,11 @@ namespace HouseholdUserApplication.Db_Manager
                 using (MySqlCommand cmd = new MySqlCommand())
                 {
                     cmd.CommandText = @"SELECT * FROM activities
-                    INNER JOIN addresses AS a
-                   ON address = a.address_id";
+                                     INNER JOIN addresses AS a
+                                     ON address = a.address_id
+                                     INNER JOIN residents_addresses as ra
+                                     ON a.address_id =  ra.address
+                                     ";
                     cmd.Connection = conn;
                     using (MySqlDataReader reader = cmd.ExecuteReader())
                     {
@@ -112,6 +115,7 @@ namespace HouseholdUserApplication.Db_Manager
                     cmd.CommandText = @"SELECT * FROM activities
                     INNER JOIN addresses AS a
                    ON address = a.address_id
+                    INNER J
                     WHERE activities.id = @activity_id";
                     cmd.Connection = conn;
                     cmd.Parameters.AddWithValue("@activity_id", id);
@@ -155,6 +159,37 @@ namespace HouseholdUserApplication.Db_Manager
 
             return "";
         }
+        public static Billing GetBilling(int id) 
+        {
+            Billing billing =new Billing();
+            using (MySqlConnection conn = new MySqlConnection(ConnectionString.Build()))
+            {
+                conn.Open();
+                using (MySqlCommand cmd = new MySqlCommand())
+                {
+                    cmd.Connection = conn;
+                    cmd.CommandText = @"SELECT * FROM billings as bi
+                                        INNER JOIN balances as b
+                                        ON balance = b.balance_id
+                                        INNER JOIN residents_addresses as ra
+                                        ON bi.address = ra.address
+                                        WHERE resident = @resident";
+                    cmd.Parameters.AddWithValue("@resident", id);
+                    using (MySqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            billing.Payed = (double)reader["payed"];
+                            billing.Remain = (double)reader["remain"];
+                            billing.TotalBilling =(double)reader["total_billing"];
+
+                        }
+                    }
+                    return billing;
+                }
+            }
+        }
+       
         public static List<Activity> GetActivitiesByDate(Dates dates,int id)
         {
             List<Activity> activities = new List<Activity>();
@@ -167,10 +202,10 @@ namespace HouseholdUserApplication.Db_Manager
                     cmd.CommandText = @"SELECT A.*,Ad.* FROM activities as A
                                         INNER JOIN addresses as Ad
                                         ON address_id = A.address
-                                        INNER JOIN users as u
+                                        INNER JOIN residents_addresses as u
                                         ON u.address = address_id
                                         WHERE year(date) = @yaer
-                                        AND u.id = @user_id
+                                        AND u.resident = @user_id
                                         AND month(date) = @month";
                                         
                     cmd.Parameters.AddWithValue("@yaer",dates.Years[0]);

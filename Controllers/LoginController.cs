@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using HouseholdUserApplication.Db_Manager;
 using HouseholdUserApplication.Models;
 using HouseholdUserApplication.Security;
 using Microsoft.AspNetCore.Http;
@@ -35,5 +36,36 @@ namespace HouseholdUserApplication.Controllers
             }
 
         }
+        [HttpPost("resetPassword")]
+        public IActionResult ResetPassword(Login login)
+        {
+            try
+            {
+                User user = Authentification.UserLink(login.Username);
+                string token = JwtGenerator.GenerateJSONWebToken(user.Id);
+                Response.Headers.Add("Token", token);
+                EmailManager.SendEmail(user,token);
+                return Ok();
+               
+            }
+            catch
+            {
+                return BadRequest();
+            }
+        }
+        //[HttpPut("updatePassword")]
+        //public IActionResult UpdatePassword(Login login)
+        //{
+        //    int id = Int32.Parse(User.Claims.First(c => c.Type == "UserId").Value);
+        //    try
+        //    {
+        //        UserManager.UpdatePassword(login.Password,id);
+        //        return Ok();
+        //    }
+        //    catch
+        //    {
+        //        return BadRequest();
+        //    }
+        //}
     }
 }

@@ -120,6 +120,7 @@ namespace HouseholdUserApplication.Db_Manager
                                     Id = Convert.ToInt32(reader["poll_id"]),
                                     Title = reader["title"].ToString(),
                                     Description = reader["description"].ToString(),
+                                    Date = (DateTime)reader["date"]
                                 },
                                 Options = new List<Option>(),
                                 Selected = new VoteCheck()
@@ -160,18 +161,18 @@ namespace HouseholdUserApplication.Db_Manager
                 using (MySqlCommand cmd = new MySqlCommand())
                 {
                     cmd.Connection = conn;
-                    cmd.CommandText = @"SELECT poll_poll_id,poll_option_id,user_id,name,count FROM poll_poll_options AS ppo
+                    cmd.CommandText = @"SELECT poll_poll_id,poll_option_id,resident,name,count FROM poll_poll_options AS ppo
                                                 LEFT JOIN votes ON poll_option_id = option_id
                                                 INNER JOIN  poll_options  AS o
                                                 ON o.option_id = ppo.poll_option_id
-                                                WHERE user_id = @user_id";
+                                                WHERE resident = @user_id";
                     cmd.Parameters.AddWithValue("@user_id", userId);
                     using (MySqlDataReader reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
                         {
                             int id = Convert.ToInt32(reader["poll_poll_id"]);
-                            int userIdFromDB = Convert.ToInt32(reader["user_id"]);
+                            int userIdFromDB = Convert.ToInt32(reader["resident"]);
                             var pollOption = pollOptions.Where(i => i.Id == id).SingleOrDefault();
                             Vote vote = new Vote();
                             if (userId == userIdFromDB)

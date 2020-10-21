@@ -17,8 +17,9 @@ namespace HouseholdUserApplication.Models
                 return password;            
             }
             set 
-            { 
-                password = PasswordConverter.GetHashedValue(value);
+            {
+                // password = PasswordConverter.GetHashedValue(value);
+                password = value;
             }
         }
     }
