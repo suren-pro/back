@@ -6,6 +6,7 @@ using HouseholdUserApplication.Db_Manager;
 using HouseholdUserApplication.Models;
 using HouseholdUserApplication.Security;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 
@@ -16,10 +17,14 @@ namespace HouseholdUserApplication.Controllers
     public class LoginController : ControllerBase
     {
         IConfiguration configuration;
-        public LoginController(IConfiguration configuration)
+        public LoginController(IConfiguration configuration,IHttpContextAccessor httpContextAccessor)
         {
             this.configuration = configuration;
+            HttpContextAccessor = httpContextAccessor;
         }
+
+        public IHttpContextAccessor HttpContextAccessor { get; }
+
         [HttpPost("login")]
         public IActionResult Login([FromBody] Login user)
         {
@@ -44,8 +49,11 @@ namespace HouseholdUserApplication.Controllers
                 User user = Authentification.UserLink(login.Username);
                 string token = JwtGenerator.GenerateJSONWebToken(user.Id);
                 Response.Headers.Add("Token", token);
-                EmailManager.SendEmail(user,token);
-                return Ok();
+                Uri domain = new Uri(Request.GetDisplayUrl());
+                Uri uri =  new Uri(domain.Scheme + "://" + domain.Host + (domain.IsDefaultPort ? "" : ":" + domain.Port));
+                string url = uri.ToString();
+                 EmailManager.SendEmail(user,token,url);
+                return Ok() ;
                
             }
             catch
