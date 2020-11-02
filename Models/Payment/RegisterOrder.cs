@@ -18,20 +18,33 @@ namespace HouseholdUserApplication.Models
         public string Language { get; set; }
         public string PageView { get; set; }
         public int ClientId { get; set; }
-        public RegisterOrder(double amount)
+        public RegisterOrder(double amount,string host)
         {
             Amount =amount;
             Username = "18537506_binding";
             Password = "18537506";
-            ReturnUrl = "https://www.youtube.com/";
+            ReturnUrl = $"{host}/acount/profile";
         }
-        public  RegisterOrder(int clientId, double amount)
+        public  RegisterOrder(int clientId, double amount, string host,string description)
         {
             ClientId = clientId;
             Amount = amount;
             Username = "18537506_binding";
             Password = "18537506";
-            ReturnUrl = "https://localhost/acount/profile";
+            Description = description;
+            ReturnUrl = $"{host}profile/account";
+
         }
+        public RegisterOrder(int clientId, double amount, string host, string description,string api)
+        {
+            ClientId = clientId;
+            Amount = amount;
+            Username = "18537506_binding";
+            Password = "18537506";
+            Description = description;
+            ReturnUrl = $"{host}{api}";
+
+        }
+
     }
 }

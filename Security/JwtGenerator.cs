@@ -15,6 +15,7 @@ namespace HouseholdUserApplication.Security
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AppSettings.Key));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature);
+            string host = "https://localhost:44388/";
             var claims = new List<Claim>()
             {
                 new Claim("UserId",id.ToString())
@@ -22,6 +23,7 @@ namespace HouseholdUserApplication.Security
             var token = new JwtSecurityToken(
               claims: claims,
               expires: DateTime.Now.AddMinutes(120),
+              issuer:host,
               signingCredentials: credentials);
 
             return new JwtSecurityTokenHandler().WriteToken(token);

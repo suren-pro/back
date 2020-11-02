@@ -30,11 +30,15 @@ namespace HouseholdUserApplication.Db_Manager
                                         ON UR.address = U.address
                                          WHERE U.resident = @user_id
                                         AND name=@name
-                                        AND date BETWEEN @date1 AND @date2
+                                         AND 
+                                        (YEAR(`date`)=@year1 AND MONTH(`date`) BETWEEN @month1 AND @month2) OR 
+										(YEAR(`date`)=@year2 AND MONTH(`date`) BETWEEN @month1 AND @month2)
                                         ORDER BY date
                                         ";
-                    cmd.Parameters.AddWithValue(@"date1", date1);
-                    cmd.Parameters.AddWithValue(@"date2", date2);
+                    cmd.Parameters.AddWithValue(@"year1", date1.Year);
+                    cmd.Parameters.AddWithValue(@"year2", date2.Year);
+                    cmd.Parameters.AddWithValue("@month1", date1.Month);
+                    cmd.Parameters.AddWithValue("@month2", date2.Month);
                     cmd.Parameters.AddWithValue(@"user_id", userId);
                     cmd.Parameters.AddWithValue(@"name", dates.Name);
                     using (MySqlDataReader reader = cmd.ExecuteReader())
@@ -82,8 +86,8 @@ namespace HouseholdUserApplication.Db_Manager
         {
             List<Point> points = new List<Point>();
             User user = UserManager.GetUserById(userId);
-            DateTime date1 = new DateTime(dates.Years[0], dates.Months[0], 1);
-            DateTime date2 = new DateTime(dates.Years[1], dates.Months[1], 1);
+            DateTime date1 = new DateTime(dates.Years[0], dates.Months[0], 28);
+            DateTime date2 = new DateTime(dates.Years[1], dates.Months[1], 28);
            
             using (MySqlConnection conn = new MySqlConnection(ConnectionString.Build()))
             {
@@ -99,12 +103,15 @@ namespace HouseholdUserApplication.Db_Manager
                                         ON utility = utility_id
                                         WHERE U.resident = @user_id
                                         AND name = @name
-                                        AND date BETWEEN @date1 AND @date2
+                                        AND 
+                                        (YEAR(`date`)=@year1 AND MONTH(`date`) BETWEEN @month1 AND @month2) OR 
+										(YEAR(`date`)=@year2 AND MONTH(`date`) BETWEEN @month1 AND @month2)
                                         ORDER BY date
                                         ";
-                    cmd.Parameters.AddWithValue(@"date1", date1);
-                    cmd.Parameters.AddWithValue(@"date2", date2);
-                    
+                    cmd.Parameters.AddWithValue(@"year1", date1.Year);
+                    cmd.Parameters.AddWithValue(@"year2", date2.Year);
+                    cmd.Parameters.AddWithValue("@month1", date1.Month);
+                    cmd.Parameters.AddWithValue("@month2", date2.Month);
                     cmd.Parameters.AddWithValue(@"user_id",userId);
                     cmd.Parameters.AddWithValue(@"name", dates.Name);
                     using (MySqlDataReader reader = cmd.ExecuteReader())
@@ -121,7 +128,7 @@ namespace HouseholdUserApplication.Db_Manager
                     }
                 }
             }
-            points.RemoveAt(points.Count - 1);
+          
             return points;
         }
         public static Total GetTotal(Dates dates,int userId)
@@ -169,9 +176,10 @@ namespace HouseholdUserApplication.Db_Manager
                             utilityRecords.Add(utilityRecord);
                         }
                     }
+
                 }
 
-                for (int i = 0; i < utilityRecords.Count - 1; i++)
+                for (int i = 0; i < utilityRecords.Count-1; i++)
                 {
                     if (utilityRecords[i].Utility.Name == utilityRecords[i + 1].Utility.Name)
                     {

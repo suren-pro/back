@@ -64,13 +64,13 @@ namespace HouseholdUserApplication.Db_Manager
 
             MailAddress fromEmail = new MailAddress("surenbarseghyan00@gmail.com", "Request form");
 
-
+            
             using (MailMessage message = new MailMessage
             {
                 From = fromEmail,
                 Subject = $" { form.Type} - {form.Title}, from {user.FirstName} {user.LastName}",
                 IsBodyHtml = true,
-                Body = form.Textg
+                Body = form.Text
             })
             {
 

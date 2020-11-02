@@ -22,7 +22,7 @@ namespace HouseholdUserApplication.CardUtils
             using (HttpClient http = new HttpClient())
             {
                 string uri = $"https://ipay.arca.am/payment/rest/register.do?" +
-                    $"userName={PaymentSettings.UserName}&password={PaymentSettings.Password}&amount={registerOrder.Amount}&language=ru&orderNumber={registerOrder.OrderNumber}&language=en&clientId={registerOrder.ClientId}&returnUrl={registerOrder.ReturnUrl}";
+                    $"description={registerOrder.Description}&userName={PaymentSettings.UserName}&password={PaymentSettings.Password}&amount={registerOrder.Amount}&language=ru&orderNumber={registerOrder.OrderNumber}&language=en&clientId={registerOrder.ClientId}&returnUrl={registerOrder.ReturnUrl}";
                 HttpResponseMessage response = await http.GetAsync(uri);
                 if (response.IsSuccessStatusCode)
                 {

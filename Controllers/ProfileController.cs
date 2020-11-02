@@ -10,6 +10,7 @@ using HouseholdUserApplication.Models;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
@@ -20,6 +21,8 @@ namespace HouseholdUserApplication.Controllers
     [Authorize]
     public class ProfileController : ControllerBase
     {
+        string host = "";
+        
         [HttpGet("getProfile")]
         public async Task<IActionResult> Get()
         {
@@ -39,16 +42,22 @@ namespace HouseholdUserApplication.Controllers
            UserManager.Update(user);
            return Ok();
         }
-        [HttpGet("pay")]
-        public async Task<IActionResult> Pay()
+        [HttpPost("pay")]
+        public async Task<IActionResult> Pay(Payment payment)
         {
             int id = Int32.Parse(User.Claims.First(c => c.Type == "UserId").Value);
+            string api = "api/profile/addActivity";
             try
             {
-                RegisterOrder registerOrder = new RegisterOrder(500);
-                registerOrder.OrderNumber = (UserManager.CheckLastOrder() + 1) + "hou1se";
+                string desc = "Payment with new card";
+                Uri domain = new Uri(Request.GetDisplayUrl());
+                Uri uri = new Uri(domain.Scheme + "://" + domain.Host + (domain.IsDefaultPort ? "" : ":" + domain.Port));
+                host = uri.ToString();
+                RegisterOrder registerOrder = new RegisterOrder(id, payment.Amount * 100, host, desc,api);
                 OrderModel orderModel = await PaymentManager.RegisterOrder(registerOrder);
+                UserManager.AddOrder(orderModel.OrderId);
                 string url = orderModel.FormUrl.Replace("_binding", "").Replace("  ", " ");
+               
                 return Ok(url);
 
             }
@@ -58,23 +67,33 @@ namespace HouseholdUserApplication.Controllers
 
             }
         }
-        [HttpPost("getOrderStatus")]
-        public async Task<IActionResult> GetOrderStatus(string orderNumber)
+        [HttpGet("addActivity")]
+        public async Task<IActionResult> GetOrderStatus([FromQuery]string orderId)
         {
-            OrderStatusModel orderStatus = await PaymentManager.GetOrderStatus(orderNumber);
 
-            //ActivityManager.AddActivity(orderStatus);
-            return Ok(orderStatus);
+            int id = Int32.Parse(User.Claims.First(c => c.Type == "UserId").Value);
+
+            OrderStatusModel orderStatus = await PaymentManager.GetOrderStatus(orderId);
+            Uri domain = new Uri(Request.GetDisplayUrl());
+            Uri uri = new Uri(domain.Scheme + "://" + domain.Host + (domain.IsDefaultPort ? "" : ":" + domain.Port));
+            host = uri.ToString();
+            orderStatus.Date = DateTime.Now.ToString();
+            ActivityManager.AddActivity(orderStatus,id);
+            return Redirect($"{host}profile/statment");
 
         }
 
         [HttpGet("addCard")]
         public async Task<IActionResult> AddCard()
         {
+            Uri domain = new Uri(Request.GetDisplayUrl());
+            Uri uri = new Uri(domain.Scheme + "://" + domain.Host + (domain.IsDefaultPort ? "" : ":" + domain.Port));
+            host = uri.ToString();
             int id = Int32.Parse(User.Claims.First(c => c.Type == "UserId").Value);
             try
             {
-                RegisterOrder registerOrder = new RegisterOrder(id, 1 * 100);
+                string desc = "Card registration";
+                RegisterOrder registerOrder = new RegisterOrder(id, 10 * 100,host,desc);
                 OrderModel orderModel = await PaymentManager.RegisterOrder(registerOrder);
                 UserManager.AddOrder(orderModel.OrderId);
                 string url = orderModel.FormUrl.Replace("_binding", "").Replace("  ", " ");
@@ -94,7 +113,8 @@ namespace HouseholdUserApplication.Controllers
             int id = Int32.Parse(User.Claims.First(c => c.Type == "UserId").Value);
             try
             {
-                RegisterOrder registerOrder = new RegisterOrder(id,payment.Amount*100);
+                string desc = "Payment with binding";
+                RegisterOrder registerOrder = new RegisterOrder(id,payment.Amount*100,host,desc);
                 OrderModel orderModel = await PaymentManager.RegisterOrder(registerOrder);
                 UserManager.AddOrder(orderModel.OrderId);
                 string result = await PaymentManager.Pay(payment,orderModel.OrderId);
