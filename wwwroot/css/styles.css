@@ -1,0 +1,28 @@
+﻿.header {
+    text-align: center;
+    color: rgba(0, 24, 187, 0.93);
+    
+
+}
+.header h3{
+    margin: 0 auto;
+}
+table {
+    width: 80%;
+    margin-top:20px;
+    border-collapse: collapse;
+    margin:0 auto;
+}
+
+td, th {
+    
+    padding: 15px;
+    font-size: 22px;
+    text-align: justify;
+    border-bottom:1px solid #808080;
+}
+
+table th {
+    background-color: rgba(0, 24, 187, 0.93);
+    color: white;
+}

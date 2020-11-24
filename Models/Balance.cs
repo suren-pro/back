@@ -8,15 +8,23 @@ namespace HouseholdUserApplication.Models
     public class Balance
     {
         public int Id { get; set; }
-        public int TotalBalance { get; set; }
-        public int Gas { get; set; }
-        public int Water { get; set; }
-        public int Electricity { get; set; }
-        public int UtilityBalance { get; set; }
-        public int UtilityPenalty{ get; set; }
-        public int UtilityBalanceDate { get; set; }
-        public int CommunityBalance { get; set; }
-        public int CommunityPenalty { get; set; }
-        public int CommunityBalanceDate { get; set; }
+        public DateTime OpenDate { get; set; }
+        public double Utilities { get; set; }
+        public double Services { get; set; }
+        private double totalBalance;
+        public double TotalBalance
+        {
+            get
+            {
+                totalBalance = Utilities + Services;
+                return totalBalance;
+            }
+            set
+            {
+                totalBalance = value;
+            }
+        }
+        public DateTime CloseDate { get; set; }
     }
+
 }

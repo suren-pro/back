@@ -42,7 +42,7 @@ namespace HouseholdUserApplication.Models
             Username = "18537506_binding";
             Password = "18537506";
             Description = description;
-            ReturnUrl = $"{host}{api}";
+            ReturnUrl = $"{host}profile/statment";
 
         }
 

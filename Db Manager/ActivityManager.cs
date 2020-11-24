@@ -68,7 +68,7 @@ namespace HouseholdUserApplication.Db_Manager
         {
             Activity activity = new Activity
             {
-                ServiceName ="Card2Card",
+                ServiceName ="Payment",
                 Amount = Convert.ToDouble(orderStatus.Amount)/100,
                 Fee = 0,
                 Rrn = orderStatus.AuthRefNum,
@@ -76,7 +76,7 @@ namespace HouseholdUserApplication.Db_Manager
                 CardNumber =orderStatus.CardAuthInfo.Pan,
                 OrderId = orderStatus.OrderNumber,
                 Customer = orderStatus.CardAuthInfo.CardHolderName,
-                Description ="asd",
+                Description ="Payment",
                
 
             };
