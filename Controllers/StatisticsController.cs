@@ -108,6 +108,20 @@ namespace HouseholdUserApplication.Controllers
                 return BadRequest();
             }
         }
+        [HttpPost("getTotalGraphByYear")]
+        public IActionResult GetTotalGraphByYear(Dates dates)
+        {
+            try
+            {
+                int id = Int32.Parse(User.Claims.First(c => c.Type == "UserId").Value);
+                Total total = StatisticsManager.GetTotalGraphByYear(dates, id);
+                return Ok(total);
+            }
+            catch
+            {
+                return BadRequest();
+            }
+        }
 
     }
 }

@@ -132,7 +132,8 @@ namespace HouseholdUserApplication
             Configuration.Bind("ConnectionStrings", new ConnectionString());
             Configuration.Bind("JWT", new AppSettings());
             Configuration.Bind("Payment", new PaymentSettings());
-            
+            Configuration.Bind("PayX", new PayXSettings());
+
 
         }
     }
