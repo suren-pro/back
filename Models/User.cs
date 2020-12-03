@@ -15,5 +15,6 @@ namespace HouseholdUserApplication.Models
         public string Email { get; set; }
          public Address Address { get; set; }
         public List<Card> Cards { get; set; }
+        public string QrCode { get; set; }
     }
 }

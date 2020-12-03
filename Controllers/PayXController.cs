@@ -15,12 +15,12 @@ namespace HouseholdUserApplication.Controllers
     [ApiController]
     public class PayXController : ControllerBase
     {
-        [HttpGet("generateQR/{amount}")]
-        public async Task<IActionResult> GenerateQrCode(string amount)
+        [HttpGet("generateQR")]
+        public async Task<IActionResult> GenerateQrCode([FromQuery] int amount)
         {
-            string status = await PayXUtils.PaymentManager.GenerateQr(amount);
+            int id = Int32.Parse(User.Claims.First(c => c.Type == "UserId").Value);
+            string status = await PayXUtils.PaymentManager.GenerateQr(amount,id);
             QrResponse qrResponse = JsonConvert.DeserializeObject<QrResponse>(status);
-
             return Ok(qrResponse.Content.Qr_text);
         }
     }

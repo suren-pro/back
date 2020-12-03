@@ -22,7 +22,7 @@ namespace HouseholdUserApplication.Controllers
     public class ProfileController : ControllerBase
     {
         string host = "";
-        
+
         [HttpGet("getProfile")]
         public async Task<IActionResult> Get()
         {
@@ -39,8 +39,45 @@ namespace HouseholdUserApplication.Controllers
         [HttpPut("updateDetails")]
         public IActionResult Update(User user)
         {
-           UserManager.Update(user);
-           return Ok();
+            UserManager.Update(user);
+
+            return Ok();
+        }
+        [HttpPut("updateCard")]
+        public IActionResult UpdateCard(List<CardChange> cards)
+        {
+            try
+            {
+                CardManager.UpdateCard(cards);
+                return Ok();
+
+            }
+            catch
+            {
+                return BadRequest();
+            }
+        }
+        [HttpGet("addCardOrderStatus")]
+        public async Task<IActionResult> GetOrderStatusNewCard([FromQuery]string orderId)
+        {
+
+            int id = Int32.Parse(User.Claims.First(c => c.Type == "UserId").Value);
+            try
+            {
+                OrderStatusModel orderStatus = await PaymentManager.GetOrderStatus(orderId);
+                Uri domain = new Uri(Request.GetDisplayUrl());
+                Uri uri = new Uri(domain.Scheme + "://" + domain.Host + (domain.IsDefaultPort ? "" : ":" + domain.Port));
+                host = uri.ToString();
+                orderStatus.Date = DateTime.Now.ToString();
+                CardManager.AddCard(orderStatus.BindingInfo.BindingId);
+                return Ok();
+            }
+            catch
+            {
+                return BadRequest();
+            }
+
+
         }
         [HttpPost("pay")]
         public async Task<IActionResult> Pay(Payment payment)
@@ -53,11 +90,11 @@ namespace HouseholdUserApplication.Controllers
                 Uri domain = new Uri(Request.GetDisplayUrl());
                 Uri uri = new Uri(domain.Scheme + "://" + domain.Host + (domain.IsDefaultPort ? "" : ":" + domain.Port));
                 host = uri.ToString();
-                RegisterOrder registerOrder = new RegisterOrder(id, payment.Amount * 100, host, desc,api);
+                RegisterOrder registerOrder = new RegisterOrder(id, payment.Amount * 100, host, desc, api);
                 OrderModel orderModel = await PaymentManager.RegisterOrder(registerOrder);
                 UserManager.AddOrder(orderModel.OrderId);
                 string url = orderModel.FormUrl.Replace("_binding", "").Replace("  ", " ");
-               
+
                 return Ok(url);
 
             }
@@ -86,9 +123,10 @@ namespace HouseholdUserApplication.Controllers
             {
                 return BadRequest();
             }
-            
+
 
         }
+
 
         [HttpGet("addCard")]
         public async Task<IActionResult> AddCard()
@@ -100,7 +138,7 @@ namespace HouseholdUserApplication.Controllers
             try
             {
                 string desc = "Card registration";
-                RegisterOrder registerOrder = new RegisterOrder(id, 10 * 100,host,desc);
+                RegisterOrder registerOrder = new RegisterOrder(id, 10 * 100, host, desc);
                 OrderModel orderModel = await PaymentManager.RegisterOrder(registerOrder);
                 UserManager.AddOrder(orderModel.OrderId);
                 string url = orderModel.FormUrl.Replace("_binding", "").Replace("  ", " ");
@@ -112,9 +150,10 @@ namespace HouseholdUserApplication.Controllers
                 return BadRequest();
             }
         }
-        
 
-        [HttpPost("payBinding")]
+
+
+        [HttpPost("payWithBinding")]
         public async Task<IActionResult> PayWithBinging(Payment payment)
         {
             int id = Int32.Parse(User.Claims.First(c => c.Type == "UserId").Value);

@@ -11,9 +11,9 @@ namespace HouseholdUserApplication.PayXUtils
 {
     public class PaymentManager
     {
-        public static async Task<string> GenerateQr(string amount)
+        public static async Task<string> GenerateQr(int amount,int userId)
         {
-            GenerateQrModel qrModel = new GenerateQrModel();
+            GenerateQrModel qrModel = new GenerateQrModel(userId);
             qrModel.amount = amount;
             string jsonInString = JsonConvert.SerializeObject(qrModel);
             Uri uri = new Uri("https://online.payx.am/pos_api/get_link");

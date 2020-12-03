@@ -13,5 +13,6 @@ namespace HouseholdUserApplication.Models
         public string CardHolderName { get; set; }
         public string BindingId { get; set; }
         public string Color { get; set; }
+        public string Name { get; set; }
     }
 }

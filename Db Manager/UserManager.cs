@@ -75,6 +75,7 @@ namespace HouseholdUserApplication.Db_Manager
                             user.Address.Block = reader["block"].ToString();
                             user.Address.Street = reader["street"].ToString();
                             user.Address.Number = (int)reader["number"];
+                            user.QrCode = reader["qr_code"].ToString();
                         }
                     }
                 }

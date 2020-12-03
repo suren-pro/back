@@ -17,5 +17,6 @@ namespace HouseholdUserApplication.Models
         public string Date { get; set; }
         public string  AuthRefNum { get; set; }
         public CardAuthInfo CardAuthInfo { get; set; }
+        public BindingInfo BindingInfo { get; set; }
     }
 }
